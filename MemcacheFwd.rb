@@ -26,11 +26,11 @@ TSDBTIMER = 10
 
 # Dump the stats to a flat file? Either true or false.
 # We read these values with OpenNMS, and it does alerting for us.
-STATSDUMP = true
+STATSDUMP = false
 
 # Stats flat file location. STATSDUMP value must be true for this to
 # have any effect.
-STATSFILE = '/weebly/stats/counterstats'
+STATSFILE = '/tmp/counterstats'
 
 $metrics = {}
 
