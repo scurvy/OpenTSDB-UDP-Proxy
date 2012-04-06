@@ -24,8 +24,8 @@ There is no library. Just use a socket.
 
 This is how easy it is to send a UDP datagram with Ruby:
 
-  s = UDPSocket.new()
-  s.send("increment yourawesomecounter",0,"yourproxyaddress",11212)
+	s = UDPSocket.new()
+	s.send("increment yourawesomecounter",0,"yourproxyaddress",11212)
 
 Why couchbase/memcache instead of redis, riak, etc ?
 ----------------------------------------------------
@@ -51,9 +51,9 @@ I do now. If you don't send a tag with an increment or decrement operation, the 
 
 Examples:
 
-increment yourCounter host=bob class=jameson
-decrement yourCounter class=emad cluster=rtb
-set yourCounter 100 host=etmaguire cluster=eflo
+	increment yourCounter host=bob class=jameson
+	decrement yourCounter class=emad cluster=rtb
+	set yourCounter 100 host=etmaguire cluster=eflo
 
 Is there a limit to the number of tags?
 ---------------------------------------
@@ -67,7 +67,7 @@ Yep. It's pretty simple. The only difference is that now you *must* add a tag to
 
 Example:
 
-set yourCounter 100 host=etmaguire cluster=eflo
+	set yourCounter 100 host=etmaguire cluster=eflo
 
 Can I use riak or redis instead of couchbase?
 ---------------------------------------------
