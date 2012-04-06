@@ -33,6 +33,7 @@ STATSDUMP = false
 STATSFILE = '/tmp/counterstats'
 
 $metrics = {}
+$sets = []
 
 module MemcacheFwd
   def post_init
@@ -71,6 +72,12 @@ module MemcacheFwd
               key = request[1] + ':' + data.split(' ',3)[2].tr(' ', ':')
               $metrics[key] = 'metric'
               $cache.decrement(key)
+            when 'set'
+              now = Time.now.to_i
+              key = request[1]
+              val = request[2]
+              tags = data.split(' ',4)[3]
+              $sets.push([key,now,val,tags])
             else
               puts 'invalid action'
               send_data('invalid action\n')
@@ -100,6 +107,15 @@ opentsdbfwd = proc do
   f.close if STATSDUMP
 end
 
+opentsdbset = proc do
+  tsdbserver = TCPSocket.open(TSDBSERVER, TSDBPORT)
+  while $sets.length > 0
+    entry = $sets.pop
+    tsdbserver.puts "put #{entry[0]} #{entry[1]} #{entry[2]} #{entry[3]}\r\n"
+  end
+  tsdbserver.close
+end
+
 EventMachine::run do
   $cache = Memcached.new( MEMCACHESERVER,
                           :use_udp => false,
@@ -109,4 +125,5 @@ EventMachine::run do
                           :server_failure_limit => 3 )
   EventMachine::open_datagram_socket(PROXYLISTEN, PROXYPORT, MemcacheFwd)
   EventMachine::add_periodic_timer(TSDBTIMER,opentsdbfwd)
+  EventMachine::add_periodic_timer(TSDBTIMER,opentsdbset)
 end
