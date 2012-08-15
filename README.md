@@ -23,7 +23,7 @@ Library
 There is no library. Just use a socket.
 
 This is how easy it is to send a UDP datagram with Ruby:
-        require 'socket'
+	require 'socket'
 	s = UDPSocket.new()
 	s.send("increment yourawesomecounter",0,"yourproxyaddress",11212)
 
