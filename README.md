@@ -23,19 +23,23 @@ Library
 There is no library. Just use a socket.
 
 This is how easy it is to send a UDP datagram with Ruby:
-
+        require 'socket'
 	s = UDPSocket.new()
 	s.send("increment yourawesomecounter",0,"yourproxyaddress",11212)
 
-Why couchbase/memcache instead of redis, riak, etc ?
+Why couchbase instead of redis, riak, etc ?
 ----------------------------------------------------
 
-Memcache is easy, but it's not persistent nor does it handle failure well. Couchbase solves these problems. Add 2 servers and let it rip. Plus, the ASCII interface to memcache is super simple to use for troubleshooting. We could have used redis, but everyone runs memcache and knows how to use it. If you really don't care about stats persistence, you could use memcache instead of Couchbase. We'd recommend Couchbase though
+UPDATE: I added a redis version of the script named RedisFwd.rb. We ran into some weird issues with Couchbase where it would return KeyNotFound exceptions every now and then. That clashed with what we had to accomplish, so we changed our back-end of choice to redis. No more weird exceptions and the script is a little simpler since redis will automatically handle an increment operation on a key which doesn't exist (makes sense). This is what we were after all along, so switching made sense.
+
+Memcache is easy, but it's not persistent nor does it handle failure well. Couchbase solves these problems. Add 2 servers and let it rip. Plus, the ASCII interface to memcache is super simple to use for troubleshooting. If you really don't care about stats persistence, you could use memcache instead of Couchbase or redis.
+
+Overall, we'd recommend using the redis version of the script. Note that we ran into Couchbase problems when doing updates of about 2000-3000 per second. It was fine up to that point.
 
 Why not directly track the counter in HBase?
 --------------------------------------------
 
-Yes, Hbase does have increment and decrement operators. However, it's Hbase and isn't as easy to write to as couchbase/memcached.
+Yes, Hbase does have increment and decrement operators. However, it's Hbase and isn't as easy to write to as couchbase/memcached. Plus, we don't need the granularity of tracking every single value change of the counter.
 
 Shut up already, how does this thing work?
 ------------------------------------------
@@ -58,7 +62,7 @@ Examples:
 Is there a limit to the number of tags?
 ---------------------------------------
 
-There might be one in HBase or OpenTSDB, but I don't know what it is. Also, there's the maximum size of a UDP datagram. Don't go over that.
+There might be one in HBase or OpenTSDB -- I think it's 8? Also, there's the maximum size of a UDP datagram. Don't go over that.
 
 Do you support set (gauge) values now?
 --------------------------------------
@@ -69,7 +73,7 @@ Example:
 
 	set yourCounter 100 host=etmaguire cluster=eflo
 
-Can I use riak or redis instead of couchbase?
+Can I use riak instead of couchbase?
 ---------------------------------------------
 
 Sure. Go for it. I like riak. I know the Basho peeps. Give them some love. I only ask that you publish your stuff on the Githubs.
@@ -83,7 +87,7 @@ You should have hired some real programmers instead of just copying and pasting 
 What are the requirements?
 --------------------------
 
-You'll need Ruby, the memcached gem, and the eventmachine gem to run the script. You'll also need couchbase/memcached setup along with OpenTSDB, Hbase, Hadoop, etc.
+You'll need Ruby, the memcached or redis gem, and the eventmachine gem to run the script. You'll also need couchbase/redis setup along with OpenTSDB, Hbase, Hadoop, etc.
 
 Your stuff is OK, but I want to modify it. Can I change it?
 -----------------------------------------------------------
