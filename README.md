@@ -8,9 +8,9 @@ Problem
 
 OpenTSDB is an powerful tool for tracking an extreme amount of data points in a very quick manner. The only problem with OpenTSDB is that it's just a time series database. It has no operators for increment or decrement. HBase (what OpenTSDB runs on) has these actors, but they're only available via TCP. Here at Weebly, we wanted a fast, lightweight, non-intrusive way to track a large number of counters and see them graphed in realtime. Also, no downsampling would be allowed. Full monty, full data set. For this reason, graphite, carbon, statsd, etc were all out. 
 
-Our idea is to send simple updates from servers via UDP to a collector. For counter updates, the collector sends an increment or decrement operation to a Memcache or Couchbase server via persistent TCP connection. In a separate event loop, the proxy will query Memcache/Couchbase for the value of all counters it's seen, then send the data to OpenTSDB.
+Our idea is to send simple updates from servers via UDP to a collector. For counter updates, the collector sends an increment or decrement operation to a Couchbase or Redis server via persistent TCP connection. In a separate event loop, the proxy will query Couchbase/Redis for the value of all counters it's seen, then send the data to OpenTSDB.
 
-Set operations (for gauges) work in a similar manner, but they don't use Couchbase/Memcache. They're stored locally with a timestamp, then sent off to OpenTSDB at regular intervals. This avoids having us open and close a TCP socket frequently. In short, we're buffering the values in an array, then doing a buk update to OpenTSDB. Not rocket science.
+Set operations (for gauges) work in a similar manner, but they don't use Couchbase/Redis. They're stored locally with a timestamp, then sent off to OpenTSDB at regular intervals. This avoids having us open and close a TCP socket frequently. In short, we're buffering the values in an array, then doing a bulk update to OpenTSDB. Not rocket science.
 
 Performance
 -----------
