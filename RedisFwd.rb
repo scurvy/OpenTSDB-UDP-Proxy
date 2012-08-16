@@ -61,7 +61,7 @@ module RedisFwd
               puts 'invalid action'
               send_data('invalid action\n')
           end
-        rescue e
+        rescue Exception => e
           puts e.to_s
         end
       else #we have tags or a set operation
@@ -72,7 +72,7 @@ module RedisFwd
             $metrics[key] = 'metric'
             begin
               $cache.incr(key)
-            rescue e
+            rescue Exception => e
               puts e.to_s
             end
           when 'decrement'
@@ -80,7 +80,7 @@ module RedisFwd
             $metrics[key] = 'metric'
             begin
               $cache.decr(key)
-            rescue e
+            rescue Exception => e
               puts e.to_s
             end
           when 'set'
